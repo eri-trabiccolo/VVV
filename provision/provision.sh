@@ -25,36 +25,26 @@ apt_package_install_list=()
 # status before adding them to the apt_package_install_list array.
 apt_package_check_list=(
 
-  # PHP7
+  # PHP5
   #
-  # Our base packages for php7.0. As long as php7.0-fpm and php7.0-cli are
-  # installed, there is no need to install the general php7.0 package, which
+  # Our base packages for php5. As long as php5-fpm and php5-cli are
+  # installed, there is no need to install the general php5 package, which
   # can sometimes install apache as a requirement.
-  php7.0-fpm
-  php7.0-cli
+  php5-fpm
+  php5-cli
 
   # Common and dev packages for php
-  php7.0-common
-  php7.0-dev
+  php5-common
+  php5-dev
 
-  # Extra PHP modules that we find useful
+  # Extra modules that we find useful
+  php5-imagick
+  php5-mcrypt
+  php5-mysql
+  php5-curl
   php-pear
-  php7.0-imagick
-  php7.0-memcache
-  php7.0-memcached
-  php7.0-bcmath
-  php7.0-curl
-  php7.0-gd
-  php7.0-mbstring
-  php7.0-mcrypt
-  php7.0-mysql
-  php7.0-imap
-  php7.0-json
-  php7.0-soap
-  php7.0-ssh2
-  php7.0-xdebug
-  php7.0-xml
-  php7.0-zip
+  php5-gd
+  php-apc
 
   # nginx is installed as the default web server
   nginx
@@ -62,8 +52,8 @@ apt_package_check_list=(
   # memcached is made available for object caching
   memcached
 
-  # mariadb (drop-in replacement on mysql) is the default database
-  mariadb-server
+  # mysql is the default database
+  mysql-server
 
   # other packages that come in handy
   imagemagick
@@ -227,8 +217,8 @@ package_install() {
   # Use debconf-set-selections to specify the default password for the root MariaDB
   # account. This runs on every provision, even if MariaDB has been installed. If
   # MariaDB is already installed, it will not affect anything.
-  echo mariadb-server-5.5 mysql-server/root_password password "root" | debconf-set-selections
-  echo mariadb-server-5.5 mysql-server/root_password_again password "root" | debconf-set-selections
+  echo mysql-server mysql-server/root_password password "root" | debconf-set-selections
+  echo mysql-server mysql-server/root_password_again password "root" | debconf-set-selections
 
   # Postfix
   #
@@ -273,7 +263,10 @@ package_install() {
 
     # Install required packages
     echo "Installing apt-get packages..."
-    apt-get -y install ${apt_package_install_list[@]}
+    echo "Following packages will be installed: "
+    echo ${apt_package_install_list[@]}
+
+    apt-get install --force-yes -y ${apt_package_install_list[@]} 2> install-error.log
 
     # Remove unnecessary packages
     echo "Removing unnecessary packages..."
@@ -286,7 +279,9 @@ package_install() {
 
 tools_install() {
   # Disable xdebug before any composer provisioning.
-  sh /home/vagrant/bin/xdebug_off
+  if [[ -x "/home/vagrant/bin/xdebug_off" ]]; then
+    sh /home/vagrant/bin/xdebug_off
+  fi
 
   # nvm
   if [[ ! -d "/srv/config/nvm" ]]; then
@@ -302,6 +297,11 @@ tools_install() {
   fi
   # Activate nvm
   source /srv/config/nvm/nvm.sh
+
+  if [[ ! -f /usr/bin/npm ]]; then
+    curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+  fi
 
   # npm
   #
@@ -411,7 +411,7 @@ nginx_setup() {
   if [[ ! -d "/etc/nginx/upstreams" ]]; then
     mkdir "/etc/nginx/upstreams/"
   fi
-  cp "/srv/config/nginx-config/php7.0-upstream.conf" "/etc/nginx/upstreams/php70.conf"
+  #cp "/srv/config/nginx-config/php7.0-upstream.conf" "/etc/nginx/upstreams/php70.conf"
 
   if [[ ! -d "/etc/nginx/custom-sites" ]]; then
     mkdir "/etc/nginx/custom-sites/"
@@ -425,17 +425,16 @@ nginx_setup() {
 
 phpfpm_setup() {
   # Copy php-fpm configuration from local
-  cp "/srv/config/php-config/php7.0-fpm.conf" "/etc/php/7.0/fpm/php-fpm.conf"
-  cp "/srv/config/php-config/php7.0-www.conf" "/etc/php/7.0/fpm/pool.d/www.conf"
-  cp "/srv/config/php-config/php7.0-custom.ini" "/etc/php/7.0/fpm/conf.d/php-custom.ini"
-  cp "/srv/config/php-config/opcache.ini" "/etc/php/7.0/fpm/conf.d/opcache.ini"
-  cp "/srv/config/php-config/xdebug.ini" "/etc/php/7.0/mods-available/xdebug.ini"
+  #cp "/srv/config/php-config/php5-fpm.conf" "/etc/php/7.0/fpm/php-fpm.conf"
+  cp "/srv/config/php-config/www.conf" "/etc/php5/fpm/pool.d/www.conf"
+  cp "/srv/config/php-config/php-custom.ini" "/etc/php5/fpm/conf.d/php-custom.ini"
+  cp "/srv/config/php-config/xdebug.ini" "/etc/php5/fpm/conf.d/xdebug.ini"
+  cp "/srv/config/php-config/apc.ini" "/etc/php5/fpm/conf.d/apc.ini"
 
-  echo " * Copied /srv/config/php-config/php7.0-fpm.conf   to /etc/php/7.0/fpm/php-fpm.conf"
-  echo " * Copied /srv/config/php-config/php7.0-www.conf   to /etc/php/7.0/fpm/pool.d/www.conf"
-  echo " * Copied /srv/config/php-config/php7.0-custom.ini to /etc/php/7.0/fpm/conf.d/php-custom.ini"
-  echo " * Copied /srv/config/php-config/opcache.ini       to /etc/php/7.0/fpm/conf.d/opcache.ini"
-  echo " * Copied /srv/config/php-config/xdebug.ini        to /etc/php/7.0/mods-available/xdebug.ini"
+  echo " * Copied /srv/config/php-config/php5-fpm.conf   to /etc/php5/fpm/php-fpm.conf"
+  echo " * Copied /srv/config/php-config/php5-www.conf   to /etc/php5/fpm/pool.d/www.conf"
+  echo " * Copied /srv/config/php-config/php5-custom.ini to /etc/php5/fpm/conf.d/php-custom.ini"
+  echo " * Copied /srv/config/php-config/xdebug.ini        to /etc/php5/fpm/conf.d/xdebug.ini"
 
   # Copy memcached configuration from local
   cp "/srv/config/memcached-config/memcached.conf" "/etc/memcached.conf"
@@ -549,18 +548,18 @@ services_restart() {
   echo -e "\nRestart services..."
   service nginx restart
   service memcached restart
-  service mailcatcher restart
+  #service mailcatcher restart
 
   # Disable PHP Xdebug module by default
-  phpdismod xdebug
+  #phpdismod xdebug
 
   # Enable PHP mcrypt module by default
-  phpenmod mcrypt
+  #phpenmod mcrypt
 
   # Enable PHP mailcatcher sendmail settings by default
-  phpenmod mailcatcher
+ # phpenmod mailcatcher
 
-  service php7.0-fpm restart
+  service php5-fpm restart
 
   # Add the vagrant user to the www-data group so that it has better access
   # to PHP and Nginx related files.
@@ -662,46 +661,50 @@ cleanup_vvv(){
 
 ### SCRIPT
 #set -xv
+main() {
+  network_check
+  # Profile_setup
+  echo "Bash profile setup and directories."
+  profile_setup
 
-network_check
-# Profile_setup
-echo "Bash profile setup and directories."
-profile_setup
+  network_check
+  # Package and Tools Install
+  echo " "
+  echo "Main packages check and install."
+  git_ppa_check
+  package_install
+  tools_install
+  nginx_setup
+  #mailcatcher_setup
+  phpfpm_setup
+  services_restart
+  mysql_setup
 
-network_check
-# Package and Tools Install
-echo " "
-echo "Main packages check and install."
-git_ppa_check
-package_install
-tools_install
-nginx_setup
-mailcatcher_setup
-phpfpm_setup
-services_restart
-mysql_setup
+  network_check
+  # WP-CLI and debugging tools
+  echo " "
+  echo "Installing/updating wp-cli and debugging tools"
 
-network_check
-# WP-CLI and debugging tools
-echo " "
-echo "Installing/updating wp-cli and debugging tools"
+  wp_cli
+  # don't need php_codesniff in this testing environment
+  #php_codesniff
 
-wp_cli
-php_codesniff
+  network_check
+  # Time for WordPress!
+  echo " "
 
-network_check
-# Time for WordPress!
-echo " "
+  wpsvn_check
 
-wpsvn_check
+  # VVV custom site import
+  echo " "
+  cleanup_vvv
 
-# VVV custom site import
-echo " "
-cleanup_vvv
+  #set +xv
+  # And it's done
+  end_seconds="$(date +%s)"
+  echo "-----------------------------"
+  echo "Provisioning complete in "$(( end_seconds - start_seconds ))" seconds"
+  echo "For further setup instructions, visit http://vvv.dev"
+}
 
-#set +xv
-# And it's done
-end_seconds="$(date +%s)"
-echo "-----------------------------"
-echo "Provisioning complete in "$(( end_seconds - start_seconds ))" seconds"
-echo "For further setup instructions, visit http://vvv.dev"
+main

@@ -1,15 +1,19 @@
 ---
 sites:
   wordpress-default:
-    repo: https://github.com/Varying-Vagrant-Vagrants/vvv-wordpress-default.git
+    #don't use a remote repo for provisioning,
+    #because of the domain prefix (oldphp-) we'll provide the provision dir locally
+    #repo: https://github.com/Varying-Vagrant-Vagrants/vvv-wordpress-default.git
     hosts:
-      - local.wordpress.dev
+      - oldphp-local.wordpress.dev
 
-  wordpress-develop:
-    repo: https://github.com/Varying-Vagrant-Vagrants/vvv-wordpress-develop.git
-    hosts:
-      - src.wordpress-develop.dev
-      - build.wordpress-develop.dev
+  # wordpress-develop:
+  #   #don't use a remote repo for provisioning,
+  #   #because of the domain prefix (oldphp-) we'll provide the provision dir locally
+  #   #repo: https://github.com/Varying-Vagrant-Vagrants/vvv-wordpress-develop.git
+  #   hosts:
+  #     - oldphp-src.wordpress-develop.dev
+  #     - oldphp-build.wordpress-develop.dev
 
   #wordpress-trunk: https://github.com/Varying-Vagrant-Vagrants/vvv-wordpress-trunk.git
   #multisite: https://github.com/Varying-Vagrant-Vagrants/vvv-multisite.git
@@ -18,6 +22,9 @@ sites:
 utilities:
   core:
     - memcached-admin
-    - opcache-status
+#    - opcache-status
+#    - phpmyadmin <- will use a phpadmin compatible with our php 5.3.x version (see custom section below)
+#    - webgrind
+
+  custom:
     - phpmyadmin
-    - webgrind

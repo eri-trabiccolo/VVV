@@ -21,7 +21,7 @@ if ! vvv_config['hosts'].kind_of? Hash then
   vvv_config['hosts'] = Array.new
 end
 
-vvv_config['hosts'] += ['vvv.dev']
+vvv_config['hosts'] += ['oldphp-vvv.dev']
 
 host_paths = Dir[File.join(vagrant_dir, 'www', '**', 'vvv-hosts')]
 
@@ -117,7 +117,9 @@ Vagrant.configure("2") do |config|
   # This box is provided by Ubuntu vagrantcloud.com and is a nicely sized (332MB)
   # box containing the Ubuntu 14.04 Trusty 64 bit release. Once this box is downloaded
   # to your host computer, it is cached for future use under the specified box name.
-  config.vm.box = "ubuntu/trusty64"
+  #config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "std-precise32"
+  config.vm.box_url = "http://files.vagrantup.com/precise32.box"
 
   # The Parallels Provider uses a different naming scheme.
   config.vm.provider :parallels do |v, override|
@@ -171,7 +173,7 @@ Vagrant.configure("2") do |config|
   # should be changed. If more than one VM is running through VirtualBox, including other
   # Vagrant machines, different subnets should be used for each.
   #
-  config.vm.network :private_network, id: "vvv_primary", ip: "192.168.50.4"
+  config.vm.network :private_network, id: "vvv_primary", ip: "192.168.51.4"
 
   config.vm.provider :hyperv do |v, override|
     override.vm.network :private_network, id: "vvv_primary", ip: nil
