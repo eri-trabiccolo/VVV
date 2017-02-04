@@ -21,6 +21,18 @@ if [[ ! -d "${VVV_PATH_TO_SITE}/public_html" ]]; then
   noroot tar -xvf latest.tar.gz
   rm latest.tar.gz
   mv wordpress public_html
+  # if doesn't work try with:
+  if [ $? -ne 0 ]; then
+    mkdir public_html
+    if [[ -d "${VVV_PATH_TO_SITE}/public_html" ]]; then
+      mv wordpress/* public_html/
+      if [ "$(ls -A wordpress)" ]; then
+        cp -ra wordpress/* public_html/
+      else
+        rmdir wordpress
+      fi
+    fi
+  fi
   cd ${VVV_PATH_TO_SITE}/public_html
 
   echo "Configuring WordPress Stable..."
