@@ -21,7 +21,7 @@ if ! vvv_config['hosts'].kind_of? Hash then
   vvv_config['hosts'] = Array.new
 end
 
-vvv_config['hosts'] += ['oldphp-vvv.dev']
+vvv_config['hosts'] += ['oldphp-vvv.test']
 
 host_paths = Dir[File.join(vagrant_dir, 'www', '**', 'vvv-hosts')]
 

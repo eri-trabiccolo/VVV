@@ -5,15 +5,15 @@ sites:
     #because of the domain prefix (oldphp-) we'll provide the provision dir locally
     #repo: https://github.com/Varying-Vagrant-Vagrants/vvv-wordpress-default.git
     hosts:
-      - oldphp-local.wordpress.dev
+      - oldphp-local.wordpress.test
 
   # wordpress-develop:
   #   #don't use a remote repo for provisioning,
   #   #because of the domain prefix (oldphp-) we'll provide the provision dir locally
   #   #repo: https://github.com/Varying-Vagrant-Vagrants/vvv-wordpress-develop.git
   #   hosts:
-  #     - oldphp-src.wordpress-develop.dev
-  #     - oldphp-build.wordpress-develop.dev
+  #     - oldphp-src.wordpress-develop.test
+  #     - oldphp-build.wordpress-develop.test
 
   #wordpress-trunk: https://github.com/Varying-Vagrant-Vagrants/vvv-wordpress-trunk.git
   #multisite: https://github.com/Varying-Vagrant-Vagrants/vvv-multisite.git

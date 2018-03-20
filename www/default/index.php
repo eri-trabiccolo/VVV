@@ -29,9 +29,9 @@ if ( file_exists( 'dashboard-custom.php' ) ) {
 </ul>
 
 <ul class="nav">
-	<li><a href="http://oldphp-local.wordpress.dev/">http://oldphp-local.wordpress.dev</a> for WordPress stable (www/wordpress-default)</li>
-	<li><a href="http://oldphp-src.wordpress-develop.dev/">http://oldphp-src.wordpress-develop.dev</a> for trunk WordPress development files (www/wordpress-develop/src)</li>
-	<li><a href="http://oldphp-build.wordpress-develop.dev/">http://oldphp-build.wordpress-develop.dev</a> for a Grunt build of those development files (www/wordpress-develop/build)</li>
+	<li><a href="https://oldphp-local.wordpress.test/">https://oldphp-local.wordpress.test</a> for WordPress stable (www/wordpress-default)</li>
+	<li><a href="https://oldphp-src.wordpress-develop.test/">https://oldphp-src.wordpress-develop.test</a> for trunk WordPress development files (www/wordpress-develop/src)</li>
+	<li><a href="https://oldphp-build.wordpress-develop.test/">https://oldphp-build.wordpress-develop.test</a> for a Grunt build of those development files (www/wordpress-develop/build)</li>
 </ul>
 </body>
 </html>

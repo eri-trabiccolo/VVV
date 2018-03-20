@@ -20,33 +20,33 @@ if [[ ! -d "${VVV_PATH_TO_SITE}/public_html" ]]; then
 
   cd /tmp/wordpress-develop/src/
 
-  echo "Installing local npm packages for oldphp-src.wordpress-develop.dev, this may take several minutes."
+  echo "Installing local npm packages for oldphp-src.wordpress-develop.test, this may take several minutes."
   noroot npm install
 
-  echo "Initializing grunt and creating oldphp-build.wordpress-develop.dev, this may take several minutes."
+  echo "Initializing grunt and creating oldphp-build.wordpress-develop.test, this may take several minutes."
   noroot grunt
 
   echo "Moving WordPress develop to a shared directory, ${VVV_PATH_TO_SITE}/public_html"
   mv /tmp/wordpress-develop ${VVV_PATH_TO_SITE}/public_html
 
   cd ${VVV_PATH_TO_SITE}/public_html/src/
-  echo "Creating wp-config.php for oldphp-src.wordpress-develop.dev and oldphp-build.wordpress-develop.dev."
+  echo "Creating wp-config.php for oldphp-src.wordpress-develop.test and oldphp-build.wordpress-develop.test."
   noroot wp core config --dbname=wordpress_develop --dbuser=wp --dbpass=wp --quiet --extra-php <<PHP
 // Match any requests made via xip.io.
 if ( isset( \$_SERVER['HTTP_HOST'] ) && preg_match('/^(oldphp-src|oldphp-build)(.wordpress-develop.)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(.xip.io)\z/', \$_SERVER['HTTP_HOST'] ) ) {
-    define( 'WP_HOME', 'http://' . \$_SERVER['HTTP_HOST'] );
-    define( 'WP_SITEURL', 'http://' . \$_SERVER['HTTP_HOST'] );
+    define( 'WP_HOME', 'https://' . \$_SERVER['HTTP_HOST'] );
+    define( 'WP_SITEURL', 'https://' . \$_SERVER['HTTP_HOST'] );
 } else if ( 'build' === basename( dirname( __FILE__ ) ) ) {
-// Allow (oldphp-src|oldphp-build).wordpress-develop.dev to share the same Database
-    define( 'WP_HOME', 'http://oldphp-build.wordpress-develop.dev' );
-    define( 'WP_SITEURL', 'http://oldphp-build.wordpress-develop.dev' );
+// Allow (oldphp-src|oldphp-build).wordpress-develop.test to share the same Database
+    define( 'WP_HOME', 'https://oldphp-build.wordpress-develop.test' );
+    define( 'WP_SITEURL', 'https://oldphp-build.wordpress-develop.test' );
 }
 
 define( 'WP_DEBUG', true );
 PHP
 
-  echo "Installing oldphp-src.wordpress-develop.dev."
-  noroot wp core install --url=oldphp-src.wordpress-develop.dev --quiet --title="WordPress Develop" --admin_name=admin --admin_email="admin@oldphp-local.dev" --admin_password="password"
+  echo "Installing oldphp-src.wordpress-develop.test."
+  noroot wp core install --url=oldphp-src.wordpress-develop.test --quiet --title="WordPress Develop" --admin_name=admin --admin_email="admin@oldphp-local.test" --admin_password="password"
   cp /srv/config/wordpress-config/wp-tests-config.php ${VVV_PATH_TO_SITE}/public_html/
   cd ${VVV_PATH_TO_SITE}/public_html/
 

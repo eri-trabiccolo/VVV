@@ -39,15 +39,18 @@ if [[ ! -d "${VVV_PATH_TO_SITE}/public_html" ]]; then
   noroot wp core config --dbname=wordpress_default --dbuser=wp --dbpass=wp --quiet --extra-php <<PHP
 // Match any requests made via xip.io.
 if ( isset( \$_SERVER['HTTP_HOST'] ) && preg_match('/^(oldphp-local.wordpress.)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(.xip.io)\z/', \$_SERVER['HTTP_HOST'] ) ) {
-    define( 'WP_HOME', 'http://' . \$_SERVER['HTTP_HOST'] );
-    define( 'WP_SITEURL', 'http://' . \$_SERVER['HTTP_HOST'] );
+    define( 'WP_HOME', 'https://' . \$_SERVER['HTTP_HOST'] );
+    define( 'WP_SITEURL', 'https://' . \$_SERVER['HTTP_HOST'] );
 }
 
 define( 'WP_DEBUG', true );
+define( 'WP_DEBUG_LOG', true );
+define( 'WP_DEBUG_DISPLAY', false );
+
 PHP
 
   echo "Installing WordPress Stable..."
-  noroot wp core install --url=oldphp-local.wordpress.dev --quiet --title="Local WordPress Dev" --admin_name=admin --admin_email="admin@oldphp-local.dev" --admin_password="password"
+  noroot wp core install --url=oldphp-local.wordpress.test --quiet --title="Local WordPress Dev" --admin_name=admin --admin_email="admin@oldphp-local.test" --admin_password="password"
 
 else
 
